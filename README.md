@@ -1,5 +1,6 @@
 # APEX — Adaptive Problem-solving under Expanding compleXity
 
+<<<<<<< HEAD
 **CORTExBio Corporation | Confidential | Version 1.0**
 
 A web-based behavioral research platform for measuring Complex Problem Solving (CPS) ability using Linear Structural Equation (LSE) dynamic systems.
@@ -69,23 +70,188 @@ npm install
 npm run dev
 
 # Frontend: http://localhost:5173
+=======
+A web-based behavioral assessment platform for measuring Complex Problem Solving (CPS) ability using adaptive Linear Structural Equation dynamic systems.
+
+**Live platform:** [apex.cortex-bio.com](https://apex.cortex-bio.com)  
+**Developed by:** CORTExBio Corporation, Wilmington, Delaware, USA  
+**Contact:** daniel@cortex-bio.com  
+
+---
+
+## Overview
+
+APEX presents subjects with hidden dynamic causal systems. Subjects explore the system to infer its causal structure, complete a metacognitive report, then control the system to reach defined target states. A Bayesian adaptive staircase selects difficulty across trials to maximize psychometric information yield for each individual subject.
+
+APEX is designed to span the full range of CPS ability — from clinical executive dysfunction to high-performing adults — using a single instrument with a theoretically unreachable difficulty ceiling.
+
+The paradigm is described in full in the following manuscript:
+
+> Gutierrez, D. A. (2026). *Toward a formal operationalization of complex problem solving: Theoretical foundations, neural substrates, and a novel adaptive measurement paradigm.* Submitted to *Behavior Research Methods.*
+
+---
+
+## Key Features
+
+- **LSE-based dynamic systems** — 15 pre-validated system definitions spanning a calibrated difficulty space across six complexity dimensions
+- **Three-phase trial architecture** — Exploration Phase → Metacognitive Report → Control Phase
+- **Four-dimensional scoring** — Structural Knowledge Accuracy (SKA), Control Accuracy (CA), Exploration Efficiency (EE), Adaptive Updating Index (AUI)
+- **Bayesian adaptive staircase** — Gaussian conjugate inference (Kalman filter form) for real-time ability estimation
+- **VOTAT detection** — Vary One Thing At A Time classification logged at every intervention
+- **Metacognitive Calibration Score** — correspondence between subject confidence and actual structural knowledge accuracy
+- **Three population variants** — APEX-Clinical (Levels 1–6), APEX-Standard (Levels 1–10), APEX-Advanced (Levels 6–15)
+- **Web-deployable** — FastAPI backend, React/TypeScript frontend, no specialized laboratory software required
+
+---
+
+## System Complexity Dimensions
+
+Each APEX system is defined by six independently parameterized dimensions:
+
+| Dimension | Range |
+|---|---|
+| Exogenous (input) variables | 2–6 |
+| Endogenous (output) variables | 2–6 |
+| Eigendynamic variables (self-drifting) | 0–4 |
+| Cross-weight links (indirect causal paths) | 0–5 |
+| Gaussian noise σ | 0.0–3.0 |
+| Causal weight density | Low → Dense |
+
+Level 15 is designed so that complete causal characterization within a single exploration phase is theoretically impossible, providing an asymptotic performance ceiling.
+
+---
+
+## Scoring
+
+The composite APEX Ability Score is computed as:
+
+```
+APEX Score = 0.35 × SKA + 0.35 × CA + 0.20 × EE + 0.10 × AUI
+```
+
+All four dimension scores are normalized to [0, 1]. Scoring weights are configurable in `backend/config/app_config.json` without code modification.
+
+The **Metacognitive Calibration Score (MCS)** is reported separately:
+
+```
+MCS = 1 − |confidence_normalized − SKA|
 ```
 
 ---
 
+## Architecture
+
+```
+apex/
+├── backend/              # FastAPI (Python ≥ 3.12)
+│   ├── engine/           # LSE simulation, staircase, scoring, VOTAT
+│   ├── routers/          # session, trial, scoring, admin endpoints
+│   ├── config/           # app_config.json, staircase_config.json
+│   │   └── systems/      # 15 LSE system definition JSON files
+│   └── database.py       # SQLite (dev) / PostgreSQL (production)
+├── frontend/             # React / TypeScript (Vite)
+│   └── src/components/   # ExplorationPhase, ControlPhase,
+│                         # MetacognitiveReport, SystemDisplay,
+│                         # InterventionPanel, HistoryPanel
+└── docker-compose.yml    # Full stack deployment
+```
+
+The hidden causal weight matrix is computed exclusively on the backend and is never transmitted to the frontend in any API response.
+
+---
+
+## LSE State Transition Equation
+
+Each endogenous variable evolves according to:
+
+```
+Yᵢ(t+1) = Σⱼ [wᵢⱼ · Xⱼ(t)] + Σₖ [cᵢₖ · Yₖ(t)] + eᵢ · Yᵢ(t) + ε(t)
+```
+
+Where:
+- `Xⱼ` — exogenous (subject-controlled) input variables
+- `wᵢⱼ` — hidden causal weight from input j to output i
+- `Yₖ` — other endogenous variables (indirect cross-effects)
+- `cᵢₖ` — hidden cross-weight from output k to output i
+- `eᵢ` — eigendynamic coefficient (autonomous drift)
+- `ε(t)` — Gaussian noise ~ N(0, σ²), added before bound clamping
+
+All systems are validated to satisfy |eigenvalues| < 1.0 for stable dynamic behavior across all 15 difficulty levels.
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Python ≥ 3.12
+- Node.js ≥ 18
+- Docker and Docker Compose (recommended)
+
+### Quick Start with Docker
+
+```bash
+git clone https://github.com/CORTExBio/apex.git
+cd apex
+cp .env.example .env          # set APEX_ADMIN_PASSWORD and APEX_SECRET_KEY
+docker-compose up --build
+```
+
+The platform will be available at `http://localhost:3000`.
+
+### Manual Setup
+
+**Backend:**
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+>>>>>>> 462dab2eaca53af31f6f0d0b7f052dfd711db1b6
+```
+
+---
+
+<<<<<<< HEAD
 ## How to Add a New System Definition
 
 System definitions live in `backend/config/systems/`. Each is a JSON file following this schema:
+=======
+## Configuration
+
+All parameters are externalized in configuration files. No code modification is required to change scoring weights, timing, staircase parameters, or difficulty thresholds.
+
+**`backend/config/app_config.json`** — scoring weights, phase timings, mid-trial shift threshold, CORS origins  
+**`backend/config/staircase_config.json`** — prior mean/variance, observation noise, fallback rule, calibration trials  
+**`backend/config/systems/`** — one JSON file per difficulty level; add new systems without modifying any other code
+
+---
+
+## Adding a New System Definition
+
+Create a JSON file in `backend/config/systems/` following this schema:
+>>>>>>> 462dab2eaca53af31f6f0d0b7f052dfd711db1b6
 
 ```json
 {
   "system_id": "level_16",
   "difficulty_level": 16,
+<<<<<<< HEAD
   "label": "Your descriptive label",
+=======
+  "label": "Description of this system",
+>>>>>>> 462dab2eaca53af31f6f0d0b7f052dfd711db1b6
   "n_exogenous": 6,
   "n_endogenous": 6,
   "exogenous_labels": ["A", "B", "C", "D", "E", "F"],
   "endogenous_labels": ["Y", "Z", "W", "V", "U", "T"],
+<<<<<<< HEAD
   "weight_matrix": {
     "A->Y": 2.0,
     "B->Z": -1.5
@@ -107,10 +273,19 @@ System definitions live in `backend/config/systems/`. Each is a JSON file follow
   },
   "initial_state": {"Y": 0, "Z": 0, "W": 0, "V": 0, "U": 0, "T": 0},
   "noise_sigma": 1.0,
+=======
+  "weight_matrix": { "A->Y": 2.0, "B->Z": -1.5 },
+  "cross_weights": { "Y->Z": 0.4 },
+  "eigendynamic_coefficients": { "Y": 0.3, "Z": -0.2 },
+  "variable_bounds": { "A": {"min": -5, "max": 5}, "Y": {"min": -50, "max": 50} },
+  "initial_state": { "Y": 0, "Z": 0 },
+  "noise_sigma": 3.0,
+>>>>>>> 462dab2eaca53af31f6f0d0b7f052dfd711db1b6
   "notes": "Optional description"
 }
 ```
 
+<<<<<<< HEAD
 **Stability rules:**
 - `eigendynamic_coefficients` must all be in (-1, 1) — recommend (-0.8, 0.7)
 - `cross_weights` magnitudes should be small (< 0.5 each)
@@ -189,11 +364,77 @@ Edit `backend/config/app_config.json`:
     "metacog_seconds": 180,
     "control_seconds": 240
   }
+=======
+The system will be automatically validated via `validate_system()` at startup. Systems that fail eigenvalue stability checks are rejected.
+
+---
+
+## Data Export
+
+All participant sessions, trial scores, and granular event logs are exportable via the admin API:
+
+```
+GET /api/admin/export/all          # Full database export (CSV)
+GET /api/scoring/export/{session_id}  # Single session export (CSV)
+```
+
+The event log records every subject intervention with timestamp, phase, step number, full input vector, full system state vector, target state vector, and VOTAT classification flag — providing complete behavioral process data for analysis.
+
+---
+
+## Population Variants
+
+| Variant | Difficulty Range | Target Population |
+|---|---|---|
+| APEX-Clinical (APEX-C) | Levels 1–6 | Clinical executive dysfunction (ADHD, schizophrenia, TBI, mood disorders) |
+| APEX-Standard (APEX-S) | Levels 1–10 | Healthy adults, general research, Phase 1 pharmacological studies |
+| APEX-Advanced (APEX-A) | Levels 6–15 | High-performing adults in cognitively demanding environments |
+
+All variants use the same LSE engine, scoring algorithms, and database schema. Ability scores are on a comparable continuous scale across variants.
+
+---
+
+## Patent Notice
+
+The APEX system and method is the subject of a United States provisional patent application:
+
+**Application No.** 64/016,219  
+**Title:** Adaptive Behavioral Assessment System and Method for Measuring Complex Problem-Solving Ability Using Dynamic Causal Systems with Multi-Dimensional Performance Scoring and Bayesian Difficulty Adaptation  
+**Filed:** March 25, 2026  
+**Inventor:** Daniel A. Gutierrez  
+
+---
+
+## License
+
+This software is licensed under the **GNU General Public License v3.0 (GPLv3)**.
+
+You are free to use, study, and modify this software for any purpose, including academic research. If you distribute a modified version, you must release your modifications under the same GPLv3 license. Commercial use or incorporation into proprietary software requires written permission from CORTExBio Corporation.
+
+See [LICENSE](LICENSE) for full terms.
+
+---
+
+## Citation
+
+If you use APEX in your research, please cite:
+
+```bibtex
+@article{gutierrez2026apex,
+  author  = {Gutierrez, Daniel A.},
+  title   = {Toward a Formal Operationalization of Complex Problem Solving:
+             Theoretical Foundations, Neural Substrates, and a Novel
+             Adaptive Measurement Paradigm},
+  journal = {Behavior Research Methods},
+  year    = {2026},
+  note    = {Submitted}
+>>>>>>> 462dab2eaca53af31f6f0d0b7f052dfd711db1b6
 }
 ```
 
 ---
 
+<<<<<<< HEAD
 ## Deployment to a Cloud Provider
 
 ### Option A: VPS (DigitalOcean, Linode, Hetzner, etc.)
@@ -277,3 +518,12 @@ apex/
 
 *CORTExBio Corporation | Confidential | March 2026*
 *Contact: Daniel Gutierrez, Founder & CEO | cortex-bio.com*
+=======
+## Acknowledgments
+
+The APEX paradigm is grounded in the Linear Structural Equation formalism developed by Funke (1985, 1993, 2001) and the complex problem solving research tradition of Dörner (1980) and Frensch & Funke (1995). The psychometric architecture builds on the MicroDYN validation work of Greiff et al. (2012).
+
+---
+
+*CORTExBio Corporation | cortex-bio.com | Wilmington, Delaware, USA*
+>>>>>>> 462dab2eaca53af31f6f0d0b7f052dfd711db1b6
