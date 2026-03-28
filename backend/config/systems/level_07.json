@@ -1,0 +1,38 @@
+{
+  "system_id": "level_07",
+  "difficulty_level": 7,
+  "label": "First cross-weight — 3 inputs, 4 outputs, indirect effect introduced",
+  "n_exogenous": 3,
+  "n_endogenous": 4,
+  "exogenous_labels": ["A", "B", "C"],
+  "endogenous_labels": ["Y", "Z", "W", "V"],
+  "weight_matrix": {
+    "A->Y": 2.0,
+    "A->Z": 1.5,
+    "B->Z": -2.0,
+    "B->W": 2.0,
+    "C->Y": -1.0,
+    "C->V": 2.5
+  },
+  "cross_weights": {
+    "Y->W": 0.3
+  },
+  "eigendynamic_coefficients": {
+    "Y": 0.4,
+    "Z": 0.0,
+    "W": 0.0,
+    "V": 0.0
+  },
+  "variable_bounds": {
+    "A": {"min": -5, "max": 5},
+    "B": {"min": -5, "max": 5},
+    "C": {"min": -5, "max": 5},
+    "Y": {"min": -50, "max": 50},
+    "Z": {"min": -50, "max": 50},
+    "W": {"min": -50, "max": 50},
+    "V": {"min": -50, "max": 50}
+  },
+  "initial_state": {"Y": 0, "Z": 0, "W": 0, "V": 0},
+  "noise_sigma": 1.0,
+  "notes": "Y->W cross-weight (0.3) introduces indirect effect: A affects W partly through Y. Fourth output added."
+}

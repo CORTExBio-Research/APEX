@@ -1,0 +1,42 @@
+{
+  "system_id": "level_09",
+  "difficulty_level": 9,
+  "label": "Two indirect effects — 4 inputs, 4 outputs, dense noise",
+  "n_exogenous": 4,
+  "n_endogenous": 4,
+  "exogenous_labels": ["A", "B", "C", "D"],
+  "endogenous_labels": ["Y", "Z", "W", "V"],
+  "weight_matrix": {
+    "A->Y": 2.0,
+    "A->W": 1.0,
+    "B->Z": 2.5,
+    "B->V": -1.5,
+    "C->Y": -1.5,
+    "C->Z": 1.5,
+    "D->W": -2.0,
+    "D->V": 2.0
+  },
+  "cross_weights": {
+    "Y->Z": 0.3,
+    "W->V": -0.25
+  },
+  "eigendynamic_coefficients": {
+    "Y": 0.45,
+    "Z": -0.35,
+    "W": 0.0,
+    "V": 0.0
+  },
+  "variable_bounds": {
+    "A": {"min": -5, "max": 5},
+    "B": {"min": -5, "max": 5},
+    "C": {"min": -5, "max": 5},
+    "D": {"min": -5, "max": 5},
+    "Y": {"min": -50, "max": 50},
+    "Z": {"min": -50, "max": 50},
+    "W": {"min": -50, "max": 50},
+    "V": {"min": -50, "max": 50}
+  },
+  "initial_state": {"Y": 0, "Z": 0, "W": 0, "V": 0},
+  "noise_sigma": 1.5,
+  "notes": "Two cross-weights: Y->Z and W->V. Higher noise. Indirect effects harder to separate."
+}

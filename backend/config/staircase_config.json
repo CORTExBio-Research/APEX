@@ -1,0 +1,11 @@
+{
+  "initial_level": 3,
+  "min_level": 1,
+  "max_level": 15,
+  "ability_prior_mean": 5.0,
+  "ability_prior_sd": 3.0,
+  "performance_threshold": 0.5,
+  "fallback_rule": "bayesian",
+  "calibration_trials": 2,
+  "max_trials_per_session": 8
+}

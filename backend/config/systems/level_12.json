@@ -1,0 +1,48 @@
+{
+  "system_id": "level_12",
+  "difficulty_level": 12,
+  "label": "Dense indirect effects — 5 inputs, 5 outputs, 3 cross-weights",
+  "n_exogenous": 5,
+  "n_endogenous": 5,
+  "exogenous_labels": ["A", "B", "C", "D", "E"],
+  "endogenous_labels": ["Y", "Z", "W", "V", "U"],
+  "weight_matrix": {
+    "A->Y": 2.0,
+    "A->W": 1.0,
+    "B->Z": -2.0,
+    "B->V": 1.5,
+    "C->Y": -1.5,
+    "C->Z": 1.5,
+    "D->W": -2.0,
+    "D->U": 2.0,
+    "E->V": 2.0,
+    "E->U": -1.5
+  },
+  "cross_weights": {
+    "Y->Z": 0.28,
+    "W->V": -0.22,
+    "Z->U": 0.2
+  },
+  "eigendynamic_coefficients": {
+    "Y": 0.5,
+    "Z": -0.4,
+    "W": 0.35,
+    "V": 0.0,
+    "U": 0.0
+  },
+  "variable_bounds": {
+    "A": {"min": -5, "max": 5},
+    "B": {"min": -5, "max": 5},
+    "C": {"min": -5, "max": 5},
+    "D": {"min": -5, "max": 5},
+    "E": {"min": -5, "max": 5},
+    "Y": {"min": -50, "max": 50},
+    "Z": {"min": -50, "max": 50},
+    "W": {"min": -50, "max": 50},
+    "V": {"min": -50, "max": 50},
+    "U": {"min": -50, "max": 50}
+  },
+  "initial_state": {"Y": 0, "Z": 0, "W": 0, "V": 0, "U": 0},
+  "noise_sigma": 2.0,
+  "notes": "Three cross-weight chain: Y->Z->U creates a two-hop indirect effect."
+}

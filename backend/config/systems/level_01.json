@@ -1,0 +1,28 @@
+{
+  "system_id": "level_01",
+  "difficulty_level": 1,
+  "label": "Simple Linear — 2 inputs, 2 outputs, no eigendynamics, no noise",
+  "n_exogenous": 2,
+  "n_endogenous": 2,
+  "exogenous_labels": ["A", "B"],
+  "endogenous_labels": ["Y", "Z"],
+  "weight_matrix": {
+    "A->Y": 2.0,
+    "A->Z": 3.0,
+    "B->Z": -2.0
+  },
+  "cross_weights": {},
+  "eigendynamic_coefficients": {
+    "Y": 0.0,
+    "Z": 0.0
+  },
+  "variable_bounds": {
+    "A": {"min": -5, "max": 5},
+    "B": {"min": -5, "max": 5},
+    "Y": {"min": -50, "max": 50},
+    "Z": {"min": -50, "max": 50}
+  },
+  "initial_state": {"Y": 0, "Z": 0},
+  "noise_sigma": 0.0,
+  "notes": "Direct replication of Funke (2001) Figure 1 example. Baseline: direct effects only."
+}

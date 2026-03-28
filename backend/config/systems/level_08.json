@@ -1,0 +1,41 @@
+{
+  "system_id": "level_08",
+  "difficulty_level": 8,
+  "label": "Four inputs, four outputs — mid-trial target shift introduced at this level",
+  "n_exogenous": 4,
+  "n_endogenous": 4,
+  "exogenous_labels": ["A", "B", "C", "D"],
+  "endogenous_labels": ["Y", "Z", "W", "V"],
+  "weight_matrix": {
+    "A->Y": 2.0,
+    "A->Z": 1.0,
+    "B->Z": -2.5,
+    "B->W": 1.5,
+    "C->Y": -1.5,
+    "C->V": 2.0,
+    "D->W": -2.0,
+    "D->V": 1.5
+  },
+  "cross_weights": {
+    "Y->Z": 0.25
+  },
+  "eigendynamic_coefficients": {
+    "Y": 0.5,
+    "Z": -0.4,
+    "W": 0.0,
+    "V": 0.0
+  },
+  "variable_bounds": {
+    "A": {"min": -5, "max": 5},
+    "B": {"min": -5, "max": 5},
+    "C": {"min": -5, "max": 5},
+    "D": {"min": -5, "max": 5},
+    "Y": {"min": -50, "max": 50},
+    "Z": {"min": -50, "max": 50},
+    "W": {"min": -50, "max": 50},
+    "V": {"min": -50, "max": 50}
+  },
+  "initial_state": {"Y": 0, "Z": 0, "W": 0, "V": 0},
+  "noise_sigma": 1.0,
+  "notes": "4x4 system. Mid-trial target shift enabled from this level. AUI scoring begins."
+}

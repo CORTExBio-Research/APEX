@@ -1,0 +1,48 @@
+{
+  "system_id": "level_11",
+  "difficulty_level": 11,
+  "label": "High connectivity — 5 inputs, 5 outputs, 3 eigendynamics",
+  "n_exogenous": 5,
+  "n_endogenous": 5,
+  "exogenous_labels": ["A", "B", "C", "D", "E"],
+  "endogenous_labels": ["Y", "Z", "W", "V", "U"],
+  "weight_matrix": {
+    "A->Y": 2.0,
+    "A->Z": 1.0,
+    "B->Z": -2.5,
+    "B->W": 1.5,
+    "C->Y": -1.5,
+    "C->V": 2.0,
+    "D->W": -2.0,
+    "D->U": 1.5,
+    "E->V": 2.5,
+    "E->U": -1.5,
+    "A->U": 1.0
+  },
+  "cross_weights": {
+    "Y->Z": 0.3,
+    "W->V": -0.25
+  },
+  "eigendynamic_coefficients": {
+    "Y": 0.55,
+    "Z": -0.45,
+    "W": 0.35,
+    "V": 0.0,
+    "U": 0.0
+  },
+  "variable_bounds": {
+    "A": {"min": -5, "max": 5},
+    "B": {"min": -5, "max": 5},
+    "C": {"min": -5, "max": 5},
+    "D": {"min": -5, "max": 5},
+    "E": {"min": -5, "max": 5},
+    "Y": {"min": -50, "max": 50},
+    "Z": {"min": -50, "max": 50},
+    "W": {"min": -50, "max": 50},
+    "V": {"min": -50, "max": 50},
+    "U": {"min": -50, "max": 50}
+  },
+  "initial_state": {"Y": 0, "Z": 0, "W": 0, "V": 0, "U": 0},
+  "noise_sigma": 2.0,
+  "notes": "5x5 system. Three eigendynamics. High connectivity requires many VOTAT trials."
+}

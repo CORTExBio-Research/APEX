@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: apex-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - APEX_DATABASE_URL=sqlite+aiosqlite:///./apex.db
+      - APEX_ADMIN_PASSWORD=${APEX_ADMIN_PASSWORD:-changeme}
+      - APEX_SECRET_KEY=${APEX_SECRET_KEY:-dev_secret_key_change_in_production}
+      - APEX_CORS_ORIGINS=${APEX_CORS_ORIGINS:-http://localhost:3000,http://localhost:5173}
+    volumes:
+      - apex-db:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: apex-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  apex-db:
+    driver: local

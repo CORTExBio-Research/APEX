@@ -1,0 +1,24 @@
+{
+  "app_name": "APEX",
+  "version": "1.0.0",
+  "apex_variants": ["standard", "clinical", "advanced"],
+  "default_variant": "standard",
+  "phase_timings": {
+    "exploration_seconds": 240,
+    "metacog_seconds": 180,
+    "control_seconds": 240
+  },
+  "scoring_weights": {
+    "ska": 0.35,
+    "ca": 0.35,
+    "ee": 0.20,
+    "aui": 0.10
+  },
+  "mid_trial_target_shift": {
+    "enabled_from_level": 8,
+    "shift_at_step": 10,
+    "shift_magnitude_fraction": 0.3
+  },
+  "cors_origins": ["https://cortex-bio.com", "https://apex.cortex-bio.com"],
+  "admin_password_env_var": "APEX_ADMIN_PASSWORD"
+}
