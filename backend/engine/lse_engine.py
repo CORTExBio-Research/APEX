@@ -134,11 +134,35 @@ class LSESystem:
 
     @classmethod
     def validate_system(cls, system_def: dict) -> tuple[bool, str]:
-        """Check a system definition for stability. Returns (is_valid, message)."""
+        """Check a system definition for stability and reachability. Returns (is_valid, message)."""
         try:
             sys = cls(system_def)
             if not sys.check_stability():
                 return False, "System is dynamically unstable (eigenvalues >= 1)"
+
+            # Reachability check: (I - C - E) must not be near-singular.
+            # A highly ill-conditioned (I-C-E) means steady-state targets computed
+            # via forward sampling will be poorly distributed; cond > 1000 is a
+            # practical failure threshold beyond which target generation degrades.
+            n = sys.n_endogenous
+            C = np.zeros((n, n))
+            for conn, w in sys.cross_weights.items():
+                if "->" in conn:
+                    src, dst = conn.split("->")
+                    if src in sys.endogenous_labels and dst in sys.endogenous_labels:
+                        C[sys.endogenous_labels.index(dst), sys.endogenous_labels.index(src)] = w
+            E = np.zeros((n, n))
+            for label, coef in sys.eigendynamic_coefficients.items():
+                if label in sys.endogenous_labels:
+                    E[sys.endogenous_labels.index(label), sys.endogenous_labels.index(label)] = coef
+            M = np.eye(n) - C - E
+            cond = float(np.linalg.cond(M))
+            if cond > 1000:
+                return False, (
+                    f"(I-C-E) is near-singular (cond={cond:.1f}); "
+                    "forward-sampled targets will not cover the output space reliably"
+                )
+
             return True, "System is valid and stable"
         except Exception as e:
             return False, f"Validation error: {e}"

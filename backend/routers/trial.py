@@ -135,15 +135,66 @@ async def start_trial(request: StartTrialRequest, db: AsyncSession = Depends(get
     }
 
 def _generate_target_state(system: LSESystem) -> dict[str, float]:
-    """Generate a challenging but achievable target state."""
-    import random
-    target = {}
-    for label in system.endogenous_labels:
+    """
+    Generate a guaranteed-reachable target state using forward sampling.
+
+    Method: sample a random exogenous input vector X within a conservative
+    sub-range of the slider bounds, compute the noiseless steady-state
+    endogenous output Y* = (I - C - E)^-1 * W * X, clamp to variable bounds,
+    and return Y* as the target.  Reachability is guaranteed by construction
+    because the X that generated Y* is within the actual slider limits.
+
+    Conservative x_range = 4.0 (< slider max 5.0) keeps Y* away from
+    variable bound edges after the forward mapping.
+    """
+    import numpy as np
+
+    exo_labels = system.exogenous_labels
+    endo_labels = system.endogenous_labels
+    n_exo = len(exo_labels)
+    n_endo = len(endo_labels)
+
+    # Build W (n_endo × n_exo) — exogenous → endogenous direct weights
+    W = np.zeros((n_endo, n_exo))
+    for conn, w in system.weight_matrix.items():
+        if "->" in conn:
+            src, dst = conn.split("->")
+            if src in exo_labels and dst in endo_labels:
+                W[endo_labels.index(dst), exo_labels.index(src)] = w
+
+    # Build C (n_endo × n_endo) — endogenous cross-weights
+    C = np.zeros((n_endo, n_endo))
+    for conn, w in system.cross_weights.items():
+        if "->" in conn:
+            src, dst = conn.split("->")
+            if src in endo_labels and dst in endo_labels:
+                C[endo_labels.index(dst), endo_labels.index(src)] = w
+
+    # Build E (diagonal n_endo × n_endo) — eigendynamic coefficients
+    E = np.zeros((n_endo, n_endo))
+    for label, coef in system.eigendynamic_coefficients.items():
+        if label in endo_labels:
+            E[endo_labels.index(label), endo_labels.index(label)] = coef
+
+    # Steady-state constraint: (I - C - E) * Y* = W * X
+    M = np.eye(n_endo) - C - E
+
+    # Sample X within conservative bounds (4.0 < slider limit 5.0)
+    X = np.random.uniform(-4.0, 4.0, size=n_exo)
+
+    # Compute noiseless steady-state Y* = M^-1 * W * X
+    try:
+        Y_star = np.linalg.solve(M, W @ X)
+    except np.linalg.LinAlgError:
+        Y_star = np.linalg.lstsq(M, W @ X, rcond=None)[0]
+
+    # Clamp to variable bounds and round to 1 decimal place
+    target: dict[str, float] = {}
+    for i, label in enumerate(endo_labels):
         bounds = system.variable_bounds.get(label, {"min": -50, "max": 50})
-        min_v = bounds["min"]
-        max_v = bounds["max"]
-        # Target at 40-60% of range (achievable midrange)
-        target[label] = round(min_v + random.uniform(0.35, 0.65) * (max_v - min_v), 1)
+        clamped = float(np.clip(Y_star[i], bounds["min"], bounds["max"]))
+        target[label] = round(clamped, 1)
+
     return target
 
 @router.post("/intervene")
