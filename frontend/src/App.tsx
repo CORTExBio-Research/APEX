@@ -508,7 +508,7 @@ const badgeStyles: Record<string, React.CSSProperties> = {
 
 const endBtnStyles: Record<string, React.CSSProperties> = {
   btn: {
-    position: 'fixed', bottom: 16, right: 16, zIndex: 500,
+    position: 'fixed', bottom: 76, right: 20, zIndex: 500,
     background: 'transparent', border: '1px solid #ff4444',
     color: '#ff4444', padding: '6px 14px', borderRadius: 4,
     fontSize: 12, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
