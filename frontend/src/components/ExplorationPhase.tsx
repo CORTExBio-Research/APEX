@@ -137,11 +137,12 @@ const styles: Record<string, React.CSSProperties> = {
   topRight: {
     position: 'fixed',
     top: 14,
-    left: '50%',
-    transform: 'translateX(-50%)',
+    left: 0,
+    right: 0,
     zIndex: 200,
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 12,
   },
   timerValue: {
@@ -170,14 +171,17 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'flex-start',
   },
   bottomBar: {
-    display: 'flex',
-  },
-  endBtn: {
     position: 'fixed',
     bottom: 20,
-    left: '50%',
-    transform: 'translateX(-50%)',
+    left: 0,
+    right: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    pointerEvents: 'none',
     zIndex: 100,
+  },
+  endBtn: {
+    pointerEvents: 'auto',
     padding: '9px 20px',
     background: 'transparent',
     color: '#6b7280',

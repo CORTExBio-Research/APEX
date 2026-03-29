@@ -495,7 +495,7 @@ const badgeStyles: Record<string, React.CSSProperties> = {
     position: 'fixed', top: 14, right: 16, zIndex: 500,
     background: 'rgba(17,24,39,0.97)', border: '1px solid #1f2937',
     borderRadius: 6, padding: '5px 12px',
-    display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1,
+    display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
   },
   label: {
     fontSize: 9, color: '#4b5563', letterSpacing: '0.12em',
@@ -508,7 +508,7 @@ const badgeStyles: Record<string, React.CSSProperties> = {
 
 const endBtnStyles: Record<string, React.CSSProperties> = {
   btn: {
-    position: 'fixed', bottom: 76, right: 20, zIndex: 500,
+    position: 'fixed', bottom: 24, right: 20, zIndex: 500,
     background: 'transparent', border: '1px solid #ff4444',
     color: '#ff4444', padding: '6px 14px', borderRadius: 4,
     fontSize: 12, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
