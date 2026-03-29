@@ -81,7 +81,7 @@ export function SystemDisplay({
               {deviation !== null && (
                 <div style={{
                   ...styles.deviation,
-                  color: Math.abs(deviation) < (bounds.max - bounds.min) * 0.05 ? '#4ade80' : '#9ca3af',
+                  color: Math.abs(deviation) < 0.5 ? '#4ade80' : '#9ca3af',
                 }}>
                   {deviation >= 0 ? '+' : ''}{deviation.toFixed(1)} from target
                 </div>
