@@ -296,7 +296,10 @@ def _shift_target(original_target: dict, system: LSESystem, fraction: float) -> 
 async def submit_metacog(request: SubmitMetacogRequest, db: AsyncSession = Depends(get_db)):
     state = _trial_states.get(request.trial_id)
     if not state:
-        raise HTTPException(status_code=404, detail="Trial not found")
+        raise HTTPException(
+            status_code=410,
+            detail="Trial session expired — the server restarted. Please end this session and start a new one.",
+        )
 
     system: LSESystem = state["system"]
     true_structure = system.get_true_structure()

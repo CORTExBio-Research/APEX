@@ -106,6 +106,7 @@ export function ControlPhase({
         <HistoryPanel
           history={trial.history}
           endogenousLabels={systemConfig.endogenous_labels}
+          exogenousLabels={systemConfig.exogenous_labels}
           variableBounds={systemConfig.variable_bounds}
         />
       </div>

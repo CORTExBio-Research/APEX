@@ -2,7 +2,9 @@ import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL = os.getenv("APEX_DATABASE_URL", "sqlite+aiosqlite:///./apex.db")
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_DEFAULT_DB = f"sqlite+aiosqlite:///{os.path.join(_BASE_DIR, '..', 'apex.db')}"
+DATABASE_URL = os.getenv("APEX_DATABASE_URL", _DEFAULT_DB)
 # Convert sync sqlite URL to async if needed
 if DATABASE_URL.startswith("sqlite:///") and "aiosqlite" not in DATABASE_URL:
     DATABASE_URL = DATABASE_URL.replace("sqlite:///", "sqlite+aiosqlite:///")

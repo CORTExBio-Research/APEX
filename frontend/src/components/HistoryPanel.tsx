@@ -4,6 +4,7 @@ import type { HistoryEntry } from '../types/apex.types';
 interface Props {
   history: HistoryEntry[];
   endogenousLabels: string[];
+  exogenousLabels: string[];
   variableBounds: Record<string, { min: number; max: number }>;
 }
 
@@ -12,12 +13,12 @@ const MAX_HISTORY = 20;
 const CHART_H = 100;
 const CHART_W = 200;
 
-export function HistoryPanel({ history, endogenousLabels, variableBounds }: Props) {
+export function HistoryPanel({ history, endogenousLabels, exogenousLabels, variableBounds }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = 0; // newest entries are at top
     }
   }, [history.length]);
 
@@ -116,13 +117,35 @@ export function HistoryPanel({ history, endogenousLabels, variableBounds }: Prop
       </div>
 
       {/* Current values table */}
-      <div ref={scrollRef} style={styles.table}>
+      <div style={styles.table}>
         {sparklines.map(({ label, color, lastVal }) => (
           <div key={label} style={styles.tableRow}>
             <span style={{ ...styles.tableLabel, color }}>{label}</span>
             <span style={styles.tableVal}>{lastVal.toFixed(3)}</span>
           </div>
         ))}
+      </div>
+
+      {/* Step-by-step intervention log */}
+      <div style={styles.logHeader}>
+        <span style={styles.logTitle}>INTERVENTION LOG</span>
+      </div>
+      <div ref={scrollRef} style={styles.logContainer}>
+        {recent.length === 0 ? (
+          <div style={styles.emptyMsg}>No interventions yet</div>
+        ) : (
+          [...recent].reverse().map((entry) => {
+            const exoStr = exogenousLabels
+              .map(l => `${l}=${(entry.exogenous[l] ?? 0).toFixed(1)}`)
+              .join('  ');
+            return (
+              <div key={entry.step} style={styles.logRow}>
+                <span style={styles.logStep}>#{entry.step}</span>
+                <span style={styles.logExo}>{exoStr}</span>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );
@@ -220,5 +243,47 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: 'monospace',
     color: '#9ca3af',
     fontVariantNumeric: 'tabular-nums',
+  },
+  logHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingTop: 4,
+    borderTop: '1px solid #1f2937',
+  },
+  logTitle: {
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: '0.1em',
+    color: '#4b5563',
+    textTransform: 'uppercase' as const,
+  },
+  logContainer: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: 4,
+    maxHeight: 180,
+    overflowY: 'auto' as const,
+  },
+  logRow: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: 6,
+    padding: '3px 0',
+    borderBottom: '1px solid #111827',
+  },
+  logStep: {
+    fontSize: 10,
+    color: '#4b5563',
+    fontFamily: 'monospace',
+    fontVariantNumeric: 'tabular-nums',
+    minWidth: 24,
+    paddingTop: 1,
+  },
+  logExo: {
+    fontSize: 10,
+    fontFamily: 'monospace',
+    color: '#60a5fa',
+    fontVariantNumeric: 'tabular-nums',
+    flex: 1,
   },
 };

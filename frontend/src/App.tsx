@@ -257,14 +257,24 @@ export default function App() {
 
   // ─── Error display ────────────────────────────────────────────────────────
   if (state.error) {
+    const isExpired = state.error.includes('expired');
     return (
       <div style={errorStyles.container}>
         <div style={errorStyles.box}>
-          <div style={errorStyles.label}>Error</div>
+          <div style={errorStyles.label}>{isExpired ? 'Session Expired' : 'Error'}</div>
           <div style={errorStyles.msg}>{state.error}</div>
-          <button onClick={() => setState(prev => ({ ...prev, error: null }))} style={errorStyles.btn}>
-            Dismiss
-          </button>
+          {isExpired ? (
+            <button
+              onClick={() => window.location.reload()}
+              style={errorStyles.btn}
+            >
+              Start New Session
+            </button>
+          ) : (
+            <button onClick={() => setState(prev => ({ ...prev, error: null }))} style={errorStyles.btn}>
+              Dismiss
+            </button>
+          )}
         </div>
       </div>
     );
