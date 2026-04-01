@@ -3,9 +3,12 @@
   "min_level": 1,
   "max_level": 15,
   "ability_prior_mean": 5.0,
-  "ability_prior_sd": 3.0,
+  "ability_prior_sd": 2.0,
   "performance_threshold": 0.5,
   "fallback_rule": "bayesian",
-  "calibration_trials": 2,
-  "max_trials_per_session": 8
+  "calibration_trials": 3,
+  "max_trials_per_session": 8,
+  "observation_noise_variance": 8.0,
+  "max_level_step": 3,
+  "difficulty_scale_exponent": 1.5
 }

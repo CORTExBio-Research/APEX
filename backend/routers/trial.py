@@ -61,7 +61,7 @@ async def start_trial(request: StartTrialRequest, db: AsyncSession = Depends(get
         raise HTTPException(status_code=404, detail="Session not found")
 
     # Determine phase and level
-    calibration_trials = staircase_config.get("calibration_trials", 2)
+    calibration_trials = staircase_config.get("calibration_trials", 3)
     is_calibration = request.trial_number <= calibration_trials
     phase_type = "calibration" if is_calibration else "adaptive"
 
