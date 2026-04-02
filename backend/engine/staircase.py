@@ -10,15 +10,18 @@ class AdaptiveStaircase:
         self.initial_level: int = config.get("initial_level", 3)
         self.min_level: int = config.get("min_level", 1)
         self.max_level: int = config.get("max_level", 15)
-        self.ability_prior_mean: float = config.get("ability_prior_mean", 5.0)
+        self.ability_prior_mean: float = config.get("ability_prior_mean", 3.0)
         self.ability_prior_sd: float = config.get("ability_prior_sd", 3.0)
         self.performance_threshold: float = config.get("performance_threshold", 0.5)
         self.fallback_rule: str = config.get("fallback_rule", "2up1down")
         self.calibration_trials: int = config.get("calibration_trials", 3)
         self.max_trials: int = config.get("max_trials_per_session", 8)
-        self.obs_noise_var: float = config.get("observation_noise_variance", 8.0)
+        self.obs_noise_var: float = config.get("observation_noise_variance", 10.0)
+        self.obs_scale: float = config.get("obs_scale", 1.8)
         self.max_level_step: int = config.get("max_level_step", 3)
-        self.difficulty_scale_exponent: float = config.get("difficulty_scale_exponent", 1.5)
+        self.exploration_bonus: float = config.get("exploration_bonus", 1.0)
+        self.exploration_bonus_threshold: float = config.get("exploration_bonus_threshold", 1.5)
+        self.exploration_bonus_inclusive: bool = config.get("exploration_bonus_inclusive", True)
 
         # State
         self.current_level: int = self.initial_level
@@ -59,18 +62,17 @@ class AdaptiveStaircase:
 
     def _bayesian_update(self, composite: float, level: int, success: bool) -> int:
         """
-        Simple Bayesian update of ability estimate.
-        Uses a Gaussian likelihood approximation.
-        """
-        # Likelihood: if succeeded at level L, ability is probably around L or above
-        # Model: ability ~ N(mu, sigma^2), observation: performance ~ N(ability - level, 1)
-        # Difficulty-weighted observation: performance at level L demonstrates
-        # ability proportional to that level's nonlinear difficulty, not L_max
-        exponent = self.difficulty_scale_exponent
-        effective_difficulty = (level ** exponent) / (self.max_level ** exponent) * self.max_level
-        obs = composite * effective_difficulty
+        Bayesian update of ability estimate using a Kalman-filter formulation.
 
-        # Bayesian update (Kalman-like)
+        Observation model: obs = composite × level × obs_scale.
+        With obs_scale=1.8 and performance_threshold=0.5, a subject scoring
+        at threshold (0.5) at level L produces obs ≈ 0.9L (slightly below L,
+        mild downward pressure). A perfect score produces obs = 1.8L (signals
+        ability well above the current level, driving upward movement).
+        """
+        obs = composite * level * self.obs_scale
+
+        # Kalman update
         prior_var = self._posterior_var
         prior_mean = self._posterior_mean
 
@@ -78,12 +80,15 @@ class AdaptiveStaircase:
         self._posterior_mean = prior_mean + gain * (obs - prior_mean)
         self._posterior_var = (1 - gain) * prior_var
 
-        # Select next level: posterior mean ± exploration
-        estimated_level = self._posterior_mean
-        # Add small exploration: target one level above estimate if uncertain
-        target = estimated_level + 0.5 if self._posterior_var > 2.0 else estimated_level
+        # Exploration bonus: push one step above estimate when still uncertain
+        if self.exploration_bonus_inclusive:
+            uncertain = self._posterior_var >= self.exploration_bonus_threshold
+        else:
+            uncertain = self._posterior_var > self.exploration_bonus_threshold
+        target = self._posterior_mean + (self.exploration_bonus if uncertain else 0.0)
+
+        # Round, then apply step constraint, then clamp to valid range
         next_level = round(target)
-        # Constrain step size to prevent aggressive level jumping
         next_level = max(self.current_level - self.max_level_step,
                          min(self.current_level + self.max_level_step, next_level))
         return max(self.min_level, min(self.max_level, next_level))
