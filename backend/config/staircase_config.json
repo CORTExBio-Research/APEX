@@ -7,7 +7,7 @@
   "observation_noise_variance": 10.0,
   "performance_threshold": 0.5,
   "fallback_rule": "bayesian",
-  "calibration_trials": 3,
+  "calibration_trials": 2,
   "max_trials_per_session": 8,
   "max_level_step": 3,
   "obs_scale": 1.8,
