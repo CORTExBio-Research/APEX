@@ -1,6 +1,7 @@
 import csv
 import io
 import os
+import sys
 from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,9 +13,18 @@ from backend.engine.system_loader import list_all_systems
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
+_ADMIN_PASSWORD = os.getenv("APEX_ADMIN_PASSWORD")
+if not _ADMIN_PASSWORD:
+    print(
+        "FATAL: APEX_ADMIN_PASSWORD environment variable is not set. "
+        "The admin endpoint cannot operate without a configured password. "
+        "Set this variable in your Render environment dashboard before deploying.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 def _check_admin(x_admin_password: str | None = Header(default=None)):
-    expected = os.getenv("APEX_ADMIN_PASSWORD", "admin")
-    if x_admin_password != expected:
+    if x_admin_password != _ADMIN_PASSWORD:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 @router.get("/sessions")

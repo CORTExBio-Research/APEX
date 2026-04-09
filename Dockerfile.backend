@@ -8,8 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend/
 
 ENV APEX_DATABASE_URL=sqlite+aiosqlite:///./apex.db
-ENV APEX_ADMIN_PASSWORD=changeme
-ENV APEX_SECRET_KEY=change_this_secret_key
 
 EXPOSE 8000
 
